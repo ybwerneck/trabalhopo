@@ -9,5 +9,14 @@
                   let row = rowArray.join(",");
                   csvContent += row + "\r\n";
               });              var encodedUri = encodeURI(csvContent);
-              window.open(encodedUri);              console.log(window);
+
+              newWindow = window.open("", "_blank");
+
+              request = $.ajax(encodeURI)
+
+              request.done((function (_this) {
+                  return function (data, textStatus, jqXHR) {
+                      return newWindow.location = data.Url;
+                  };
+              })(this));
           }      }    </script>    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD634e8vHGhmv9HxtQb94zFcBCs8C1TTd8&callback=initMap">    </script></body></html>
