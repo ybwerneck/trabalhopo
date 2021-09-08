@@ -1,3 +1,4 @@
 ﻿  Origem.cpp
-C:\Users\Rodrigo\source\repos\TSP4000\TSP4000\Origem.cpp(2,9): warning C4067: tokens inesperados após diretiva de pré-processador - esperado um newline
-  TSP4000.vcxproj -> C:\Users\Rodrigo\source\repos\TSP4000\x64\Debug\TSP4000.exe
+D:\Rodrigo\UFJF\PesquisaOperacional\Passini\2021.1\Trabalho 2\trabalhopo\TSP4000\TSP4000\Origem.cpp(2,9): warning C4067: tokens inesperados após diretiva de pré-processador - esperado um newline
+D:\Rodrigo\UFJF\PesquisaOperacional\Passini\2021.1\Trabalho 2\trabalhopo\TSP4000\TSP4000\Origem.cpp(48,23): warning C4018: '<': incompatibilidade de signed/unsigned
+  TSP4000.vcxproj -> D:\Rodrigo\UFJF\PesquisaOperacional\Passini\2021.1\Trabalho 2\trabalhopo\TSP4000\x64\Debug\TSP4000.exe
