@@ -78,9 +78,9 @@ int main()
 	modelo.add(outbound_arcs);
 
 	// Restricao 3
-	// The constraint is for i = 1,...,n and therefore we add empty constraints for i == 0
+	// Restrição de i == 0
 	mtz[0] = IloRangeArray(env);
-	// We then continue normally for all other i > 0
+	// Continua i > 0
 	for (int i = 1; i < n; i++) {
 		mtz[i] = IloRangeArray(env, n);
 		for (int j = 1; j < n; j++) {
@@ -111,9 +111,15 @@ int main()
 #pragma endregion
 
 	// Cria o objeto solver
-	IloCplex cplex(modelo);
+	IloCplex cplex(modelo);	
 
-	double result = cplex.getObjValue();
-	cout << "Valor do objetivo: " << result << "\n";
+	try {
+		double result = cplex.getObjValue(); //retorna valor da função objetivo
+		cout << "Valor do objetivo: " << result << "\n";
+	}
+	catch (IloException& ex) {
+		cerr << ex << endl;
+	}
+
 	// solved = cplex.solve();	
 }
