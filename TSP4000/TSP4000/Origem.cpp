@@ -5,23 +5,75 @@
 
 using namespace std;
 
+void printMatrix(int n, int** c) {
+
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+			std::cout << c[i][j] << " ";
+		std::cout << std::endl;
+
+	}
+}
+int countLines(string s) {
+	std::string line;
+	std::ifstream file(s);
+	if (!file.is_open())
+		std::cout << ("Could not open file :") << s;
+	int nc = 0;
+	while (std::getline(file, line))
+	{
+		nc++; //conta colunas
+	}
+	file.close();
+	return nc;
+}
+ int loadFile(string s,int*** c) {
+	
+	 std::string line;
+	 int val;
+	 int nc = countLines(s);
+	 (*c) = new int* [nc];
+	 int lineIdx = 0;
+	 std::ifstream myFile(s);
+	 while (std::getline(myFile, line))
+	 {
+		 std::stringstream ss(line);
+		 int colIdx = 0;
+	     int* aux = new int[nc];
+		 while (ss >> val) {
+			 aux[colIdx] = val;
+			 if (ss.peek() == ',') ss.ignore();
+			 colIdx++;
+		 }
+		 (*c)[lineIdx++] = aux;
+	
+	 }
+	 myFile.close();
+	 return nc;
+}
 int main()
 {
 	IloEnv env;
 	IloModel modelo(env);
 	
 #pragma region Dados
-	int n = 6;
-	int nD = 6;
+	
 
 	//Matriz de distancias
-	int** C = new int* [n];
+	int** C;
+	int n=loadFile("a.csv", &C);
+	int nd = n;
+	printMatrix(n, C);
+
+	/*
 	C[0] = new int[nD] {0 , 2,29,22,13,24};
 	C[1] = new int[nD] {12, 0,19, 3,25, 6};
 	C[2] = new int[nD] {29,19,0 ,21,23,25};
 	C[3] = new int[nD] {22, 3,21, 0, 4, 5};
 	C[4] = new int[nD] {13,25,23, 4, 0,16};
 	C[5] = new int[nD] {24, 6,28, 5,16, 0};
+	*/
 #pragma endregion
 
 
