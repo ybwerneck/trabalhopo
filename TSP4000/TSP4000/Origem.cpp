@@ -11,15 +11,17 @@ int main()
 	IloModel modelo(env);
 	
 #pragma region Dados
-	int n = 4;
-	int nD = 4;
+	int n = 6;
+	int nD = 6;
 
 	//Matriz de distancias
 	int** C = new int* [n];
-	C[0] = new int[nD] {2, 3, 4, 1};
-	C[1] = new int[nD] {3, 2, 1, 4};
-	C[2] = new int[nD] {1, 4, 3, 6};
-	C[3] = new int[nD] {4, 5, 2, 4};
+	C[0] = new int[nD] {0 , 2,29,22,13,24};
+	C[1] = new int[nD] {12, 0,19, 3,25, 6};
+	C[2] = new int[nD] {29,19,0 ,21,23,25};
+	C[3] = new int[nD] {22, 3,21, 0, 4, 5};
+	C[4] = new int[nD] {13,25,23, 4, 0,16};
+	C[5] = new int[nD] {24, 6,28, 5,16, 0};
 #pragma endregion
 
 
