@@ -85,6 +85,7 @@ int main()
 	// Restrições 1, 2 e 3 respectivamente
 	IloRangeArray arco_entrada(env, n);
 	IloRangeArray arco_saida(env, n);
+	// IloRangeArray mtz(env, n);
 	IloArray<IloRangeArray> mtz(env, n);
 
 	// variavel fixa em valor 1
@@ -93,13 +94,15 @@ int main()
 	// Criar variavel t[1],...., t[n]
 	for (int i = 1; i < n; i++) {
 		t[i] = IloNumVar(env, 2, n, IloNumVar::Int);
+		
 	}
 
 	// Cria variaveis x binárias	
 	for (int i = 0; i < n; i++) {
 		X[i] = IloNumVarArray(env, n);
 		for (auto j = 0u; j < n; ++j) {
-			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool);
+
+			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool,"X");
 		}
 	}
 #pragma endregion
@@ -114,7 +117,7 @@ int main()
 		for (int j = 0; j < n; j++) {
 			expr += X[j][i];
 		}
-		arco_entrada[i] = IloRange(env, 1, expr, 1);
+		arco_entrada[i] = IloRange(env, 1, expr, 1, (char *)("Entradas node"+(std::to_string(i))).c_str());
 	}
 
 	// Adiciona restricao 1 ao modelo
@@ -124,15 +127,41 @@ int main()
 	for (int i = 0; i < n; i++) {
 		expr = IloExpr(env);
 		for (int j = 0; j < n; j++) {
-			expr += X[i][j];
+			expr += X[j][i];
 		}
-		arco_saida[i] = IloRange(env, 1, expr, 1);
+		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Saidas node" + (std::to_string(i))).c_str());
 	}
 
 	// Adiciona restricao 2 ao modelo
 	modelo.add(arco_saida);
 
+	// Restricao 4
+	expr = IloExpr(env);
+	for (int i = 0; i < n; i++)
+	{
+		expr += X[i][i];
+
+	}
+	expr += 1;
+	modelo.add(IloRange(env, -IloInfinity, expr, 1));
+	/*
 	// Restricao 3
+	
+	// Restrição de i == 0
+	expr = IloExpr(env);
+	// Continua i > 0
+	for (int i = 0; i < n; i++) {
+	
+		for (int j = 0; j < n; j++) {
+			
+			expr += X[i][j];
+			}
+		// Adiciona restricao 3 ao modelo
+	}
+	expr += -n + 1;
+	modelo.add(IloRange(env, 1, expr, 1,"a"));
+	*/
+
 	// Restricao 3
 	// Restrição de i == 0
 	mtz[0] = IloRangeArray(env);
@@ -146,17 +175,17 @@ int main()
 		// Adiciona restricao 3 ao modelo
 		modelo.add(mtz[i]);
 	}
-
-	// Restrição de i == 0
 	
-
 #pragma endregion
 
 #pragma region Funcao Objetivo
-
+	expr = IloExpr(env);
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			expr += C[i][j] * X[i][j];
+			if (i != j)
+				expr += 2*C[i][j] * X[i][j];
+			else
+				expr += 0 * X[i][j];
 		}
 	}
 	IloObjective obj = IloMinimize(env, expr);
@@ -174,9 +203,8 @@ int main()
 
 	try {
 		cplex.extract(modelo);
-		cplex.exportModel("aName.lp");
+		cplex.exportModel("aNasme.lp");
 		cplex.solve();
-
 		cout << "Valor do objetivo: " << cplex.getObjValue() << "\n"; //retorna valor da função objetivo
 	}
 	catch (IloException& ex) {
