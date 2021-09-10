@@ -1,5 +1,6 @@
 #include<iostream> 
 #include"ilcplex/ilocplex.h";
+#include"ilconcert/ilolinear.h";
 #include <cmath>
 #include <limits>
 
@@ -28,7 +29,7 @@ int countLines(string s) {
 	file.close();
 	return nc;
 }
- int loadFile(string s,int*** c) {
+int loadFile(string s,int*** c) {
 	
 	 std::string line;
 	 int val;
@@ -52,84 +53,85 @@ int countLines(string s) {
 	 myFile.close();
 	 return nc;
 }
+
 int main()
 {
+	// criacao do ambiente
 	IloEnv env;
+
+	// criacao do objeto modelo
 	IloModel modelo(env);
 	
-#pragma region Dados
-	
-
-	//Matriz de distancias
-	int** C;
-	int n=loadFile("a.csv", &C);
-	int nd = n;
-	printMatrix(n, C);
-
-	/*
-	C[0] = new int[nD] {0 , 2,29,22,13,24};
-	C[1] = new int[nD] {12, 0,19, 3,25, 6};
-	C[2] = new int[nD] {29,19,0 ,21,23,25};
-	C[3] = new int[nD] {22, 3,21, 0, 4, 5};
-	C[4] = new int[nD] {13,25,23, 4, 0,16};
-	C[5] = new int[nD] {24, 6,28, 5,16, 0};
-	*/
-#pragma endregion
-
-
 #pragma region Variaveis de Decisao
 
-	// variaveis de decisao
-	IloArray<IloNumVarArray> X(env, n); 
-	IloNumVarArray t(env, n); 
+	// variavel de custo	
+	int** C; 
+	int n; //tamanho dos vetores
+	n = loadFile("a.csv", &C); //carrega dados
 
-	// Restrições 1, 2 e 3 respectivamente
-	IloRangeArray inbound_arcs(env, n);  
-	IloRangeArray outbound_arcs(env, n); 
-	IloArray<IloRangeArray> mtz(env, n); 
-
-	// variavel fixa em valor 1
-	t[0] = IloNumVar(env, 1, 1, IloNumVar::Int); 
-
-	// Criar variavel t[1],...., t[n]
-	for (int i = 1; i < n; i++) {
-		t[i] = IloNumVar(env, 2, n, IloNumVar::Int);		
-	}
-
+	// vetor de variaveis binarias
+	IloArray<IloNumVarArray> X(env);
+	IloNumVarArray t(env, n);
+	
 	// Cria variaveis x binárias	
-	for (int i = 0; i < n; i++) {
-		X[i] = IloNumVarArray(env, n);
-		for (auto j = 0u; j < n; ++j) {
-			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool);
+	for (int i = 0; i < n; i++) {		
+		for (int j = 0; j < n; j++) {
+			X[i][j] = IloNumVar(env, 0, 1, ILOBOOL);
 		}
 	}
 #pragma endregion
 
+	// cria expressões para o modelo
 	IloExpr expr(env);
 
 #pragma region Restricoes
 
-	// Restricao 1
+	// Restrições 1, 2 e 3 respectivamente
+	IloRangeArray entrada(env, n);
+	IloRangeArray saida(env, n);
+	IloArray<IloRangeArray> mtz(env, n);
+
+	// Restricao 1 (fluxo de entrada)
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			expr += X[j][i];
+			if (i != j) {
+				expr += X[j][i];
+			}
 		}
-		inbound_arcs[i] = IloRange(env, 1, expr, 1);
+		entrada[i] = IloRange(env, 1, expr, 1);
 	}
 
 	// Adiciona restricao 1 ao modelo
-	modelo.add(inbound_arcs);
+	modelo.add(entrada);
 
-	// Restricao 2
+	// Restricao 2 (fluxo de saida)
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			expr += X[i][j];
+			if (i != j) {
+				expr += X[i][j];
+			}
 		}
-		outbound_arcs[i] = IloRange(env, 1, expr, 1);
+		saida[i] = IloRange(env, 1, expr, 1);
 	}
 
 	// Adiciona restricao 2 ao modelo
-	modelo.add(outbound_arcs);
+	modelo.add(saida);	
+
+	// Create constraints 3)
+   // The constraint is for i = 1,...,n and therefore we add empty constraints for i == 0
+	mtz[0] = IloRangeArray(env);
+	// We then continue normally for all other i > 0
+	for (auto i = 1u; i < n; ++i) {
+		mtz[i] = IloRangeArray(env, n);
+		for (auto j = 1u; j < n; ++j) {
+			expr = t[i] - t[j] + static_cast<int>(n) * X[i][j];
+
+			
+			mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
+		}
+		// Add constraints 3)[i] to the model
+		modelo.add(mtz[i]);
+	}
 
 	// Restricao 3
 	// Restrição de i == 0
@@ -154,26 +156,31 @@ int main()
 			expr += C[i][j] * X[i][j];
 		}
 	}
-	IloObjective obj(env, expr, IloObjective::Minimize);
+	IloObjective obj = IloMinimize(env, expr);
+
+#pragma endregion
 
 	// Adiciona funcao objetivo ao modelo
 	modelo.add(obj);
 
-	// Finaliza expr
+	// Finaliza expressões, desalocando memória
 	expr.end();
 
-#pragma endregion
-
-	// Cria o objeto solver
+	// Cria o objeto conversor para a linguagem cplex
 	IloCplex cplex(modelo);	
 
+	//imprime matriz de distancias (custos)
+	printMatrix(n, C);
+
 	try {
+		cplex.extract(modelo);
+		cplex.solve();
 		double result = cplex.getObjValue(); //retorna valor da função objetivo
-		cout << "Valor do objetivo: " << result << "\n";
+		cout << "Valor da funcao objetivo: " << result;
+		cout << "\n";
 	}
 	catch (IloException& ex) {
-		cerr << ex << endl;
+		cout << "Solucao nao encontrada" << endl;
 	}
-
-	// solved = cplex.solve();	
+		
 }
