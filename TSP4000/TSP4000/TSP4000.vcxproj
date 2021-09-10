@@ -119,13 +119,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;IL_STD;IL_STD</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\concert\include;D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\cplex\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\include;D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\concert\include;D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\cplex\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\cplex2010.lib;D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib;D:\Arquivos de Programas\IBM\ILOG\CPLEX_Studio_Community201\concert\lib\x64_windows_msvc14\stat_mda\concert.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\lib\x64_windows_msvc14\stat_mda\concert.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\cplex2010.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;IL_STD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -144,7 +144,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\cplex2010.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\lib\x64_windows_msvc14\stat_mda\concert.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\lib\x64_windows_msvc14\stat_mda\concert.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\lib\x64_windows_msvc14\stat_mda\cplex2010.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
