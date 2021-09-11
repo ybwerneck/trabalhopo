@@ -4,7 +4,7 @@
 #include <limits>
 
 using namespace std;
-
+int** C;
 void printMatrix(int n, int** c) {
 
 	for (int i = 0; i < n; i++)
@@ -40,16 +40,20 @@ void print_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x,int
 		}
 	}
 	auto current_vertex = starting_vertex;
+	std::cout << std::endl;
+	double custo = 0;
 
 	do {
-		std::cout << current_vertex << " ";
+		std::cout << current_vertex << "->";
 		for (auto i = 0u; i < n; ++i) {
 			if (cplex.getValue(x[current_vertex][i]) > .5) {
+				custo += C[current_vertex][i];
 				current_vertex = i;
 				break;
 			}
 		}
 	} while (current_vertex != starting_vertex);
+	std::cout << current_vertex<<"Com uma distancia total de "<<custo<<"m";
 	std::cout << "\n";
 }
 
@@ -99,7 +103,7 @@ int main()
 #pragma region Dados	
 
 	//Matriz de distancias
-	int** C;
+	
 	int n = loadFile("a.csv", &C);
 	int nd = n;
 	printMatrix(n, C);

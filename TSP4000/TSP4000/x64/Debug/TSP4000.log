@@ -2,7 +2,7 @@
 C:\aa\trabalhopo\TSP4000\TSP4000\Origem.cpp(2,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 C:\aa\trabalhopo\TSP4000\TSP4000\Origem.cpp(27,22): warning C4018: '<': signed/unsigned mismatch
 C:\aa\trabalhopo\TSP4000\TSP4000\Origem.cpp(30,23): warning C4018: '<': signed/unsigned mismatch
-C:\aa\trabalhopo\TSP4000\TSP4000\Origem.cpp(46,23): warning C4018: '<': signed/unsigned mismatch
+C:\aa\trabalhopo\TSP4000\TSP4000\Origem.cpp(48,23): warning C4018: '<': signed/unsigned mismatch
 concert.lib(iloalg.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(iloalg.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(iloallocator.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(iloallocator.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(iloanyexpr.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(iloanyexpr.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
@@ -24,7 +24,7 @@ concert.lib(ilosolution.obj) : warning LNK4099: PDB 'concert.pdb' was not found 
 concert.lib(ilossequencei.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilossequencei.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(ilossol.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilossol.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(ilosstructi.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilosstructi.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
-concert.lib(ilostimei.obj) : warning LNK4099: PDB '' was not found with 'concert.lib(ilostimei.obj)' or at ''; linking object as if no debug info
+concert.lib(ilostimei.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilostimei.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(ilothread.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilothread.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(ilotypes.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilotypes.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
 concert.lib(ilocollection.obj) : warning LNK4099: PDB 'concert.pdb' was not found with 'concert.lib(ilocollection.obj)' or at 'C:\aa\trabalhopo\TSP4000\x64\Debug\concert.pdb'; linking object as if no debug info
