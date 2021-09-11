@@ -15,6 +15,44 @@ void printMatrix(int n, int** c) {
 
 	}
 }
+void print_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x,int k)  {
+	const auto n = k;
+	assert(x.getSize() == n);
+
+	std::cout << "\n\nTour: ";
+
+	auto starting_vertex = 0u;
+	IloNumArray values(cplex.getEnv() , n);
+
+	for (auto i = 0u; i < n; i++){
+		cplex.getValues(values, x[i]);
+
+		for (auto j = 0u; j < n; j++) {
+			
+			if (values[j] != 10)
+
+			{
+
+				std::cout <<std::endl<< "[" << i << "]" << "["<<j<<"] =" <<values[j];
+				starting_vertex = i;
+				
+			}
+		}
+	}
+	auto current_vertex = starting_vertex;
+
+	do {
+		std::cout << current_vertex << " ";
+		for (auto i = 0u; i < n; ++i) {
+			if (cplex.getValue(x[current_vertex][i]) > .5) {
+				current_vertex = i;
+				break;
+			}
+		}
+	} while (current_vertex != starting_vertex);
+	std::cout << "\n";
+}
+
 int countLines(string s) {
 	std::string line;
 	std::ifstream file(s);
@@ -47,6 +85,7 @@ int loadFile(string s, int*** c) {
 			colIdx++;
 		}
 		(*c)[lineIdx++] = aux;
+
 
 	}
 	myFile.close();
@@ -100,9 +139,9 @@ int main()
 	// Cria variaveis x binárias	
 	for (int i = 0; i < n; i++) {
 		X[i] = IloNumVarArray(env, n);
-		for (auto j = 0u; j < n; ++j) {
+		for (int j = 0; j < n; j++) {
 
-			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool,"X");
+			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool, (char*)("X" + ("["+std::to_string(i)+"]" + "[" + std::to_string(j) + "]")).c_str());
 		}
 	}
 #pragma endregion
@@ -170,7 +209,7 @@ int main()
 		mtz[i] = IloRangeArray(env, n);
 		for (int j = 1; j < n; j++) {
 			expr = t[i] - t[j] + static_cast<int>(n) * X[i][j];
-			mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
+			mtz[i][j] = IloRange(env, -IloInfinity, expr, n-1);
 		}
 		// Adiciona restricao 3 ao modelo
 		modelo.add(mtz[i]);
@@ -205,7 +244,9 @@ int main()
 		cplex.extract(modelo);
 		cplex.exportModel("aNasme.lp");
 		cplex.solve();
+		cplex.exportModel("aName.lp");
 		cout << "Valor do objetivo: " << cplex.getObjValue() << "\n"; //retorna valor da função objetivo
+			print_solution(cplex, X, n);
 	}
 	catch (IloException& ex) {
 		cout << "\nSolucao nao existe :" <<ex.getMessage() <<endl;
