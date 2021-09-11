@@ -166,7 +166,7 @@ int main()
 	for (int i = 0; i < n; i++) {
 		expr = IloExpr(env);
 		for (int j = 0; j < n; j++) {
-			expr += X[j][i];
+			expr += X[i][j];
 		}
 		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Saidas node" + (std::to_string(i))).c_str());
 	}
