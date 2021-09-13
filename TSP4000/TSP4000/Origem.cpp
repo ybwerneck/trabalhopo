@@ -242,21 +242,25 @@ int main()
 
 	// Restricao 3
 	// Restrição de i == 0
-
+	
 	mtz[0] = IloRangeArray(env);
 	// Continua i > 0
-	for (int k = 0; k < m; k++)
-	for (int i = 1; i < n; i++) {
+	for (int i = 0; i < n; i++) {
+		// Restrição de i == 0
+		IloExpr expr1 = IloExpr(env);
+		IloExpr expr2 = IloExpr(env);
 		mtz[i] = IloRangeArray(env, n);
 		for (int j = 1; j < n; j++) {
-			
-			
-				expr = t[i] - t[j] + static_cast<int>(n) * X[k][i][j];
-				mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
-			
+			for (int k = 0; k < m; k++)
+			{ 
+				expr1 =  X[k][i][j]* X[k][j][i] + 1;
+				// Adiciona restricao 3 ao modelo
+				modelo.add(IloRange(env, -IloInfinity, expr1,  1));
+
+			}
+
+							
 		}
-		// Adiciona restricao 3 ao modelo
-		modelo.add(mtz[i]);
 	}
 	
 #pragma endregion
