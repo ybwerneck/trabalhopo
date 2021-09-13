@@ -15,46 +15,51 @@ void printMatrix(int n, int** c) {
 
 	}
 }
-void print_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x,int k)  {
+void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArray>>& x, int k) {
 	const auto n = k;
 	assert(x.getSize() == n);
 
-	std::cout << "\n\nTour: ";
-
+	
 	auto starting_vertex = 0u;
-	IloNumArray values(cplex.getEnv() , n);
+	IloNumArray values(cplex.getEnv(), n);
+	int m = 2;
+	for (int k = 0; k <m; k++){ 
+		std::cout << "\n\nTour: "<<k;
 
-	for (auto i = 0u; i < n; i++){
-		cplex.getValues(values, x[i]);
+		for (auto i = 0u; i < n; i++) {
+	cplex.getValues(values, x[k][i]);
 
-		for (auto j = 0u; j < n; j++) {
-			
-			if (values[j] != 10)
+	for (auto j = 0u; j < n; j++) {
 
-			{
+		if (values[j] != 10)
 
-				std::cout <<std::endl<< "[" << i << "]" << "["<<j<<"] =" <<values[j];
-				starting_vertex = i;
-				
-			}
+		{
+
+			std::cout <<std::endl<< "[" << i << "]" << "["<<j<<"] =" <<values[j];
+			starting_vertex = i;
+
 		}
 	}
-	auto current_vertex = starting_vertex;
-	std::cout << std::endl;
-	double custo = 0;
+}
+auto current_vertex = starting_vertex;
+std::cout << std::endl;
+double custo = 0;
 
-	do {
-		std::cout << current_vertex << "->";
-		for (auto i = 0u; i < n; ++i) {
-			if (cplex.getValue(x[current_vertex][i]) > .5) {
-				custo += C[current_vertex][i];
-				current_vertex = i;
-				break;
-			}
+do {
+	std::cout << current_vertex << "->";
+	for (auto i = 0u; i < n; ++i) {
+		if (cplex.getValue(x[k][current_vertex][i]) > .5) {
+			custo += C[current_vertex][i];
+			current_vertex = i;
+			break;
 		}
-	} while (current_vertex != starting_vertex);
-	std::cout << current_vertex<<"Com uma distancia total de "<<custo<<"m";
-	std::cout << "\n";
+	}
+} while (current_vertex != starting_vertex);
+std::cout << current_vertex<<"Com uma distancia total de "<<custo<<"m";
+std::cout << "\n"<<std::endl<< std::endl;
+
+		
+	}
 }
 
 int countLines(string s) {
@@ -121,8 +126,9 @@ int main()
 
 #pragma region Variaveis de Decisao
 
+	int m=2;
 	// variaveis de decisao
-	IloArray<IloNumVarArray> X(env, n);
+	IloArray<IloArray<IloNumVarArray>> X(env, n);
 	IloNumVarArray t(env, n);
 
 	// Restrições 1, 2 e 3 respectivamente
@@ -141,24 +147,50 @@ int main()
 	}
 
 	// Cria variaveis x binárias	
-	for (int i = 0; i < n; i++) {
-		X[i] = IloNumVarArray(env, n);
-		for (int j = 0; j < n; j++) {
+	for (int k = 0; k < m; k++)
+	{
+		X[k] = IloArray<IloNumVarArray>(env, n);
 
-			X[i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool, (char*)("X" + ("["+std::to_string(i)+"]" + "[" + std::to_string(j) + "]")).c_str());
+	for (int i = 0; i < n; i++) {
+		X[k][i] = IloNumVarArray(env, n);
+		for (int j = 0; j < n; j++) {
+			X[k][i][j] = IloNumVar(env, 0, 1, IloNumVar::Bool, (char*)("X (V" +std::to_string(k) +(")[" + std::to_string(i) + "]" + "[" + std::to_string(j) + "]")).c_str());
 		}
 	}
+}
 #pragma endregion
 
 	IloExpr expr(env);
 
 #pragma region Restricoes
 
+
+	//REstricao 0
+	// 
+	// 	  
+	expr = IloExpr(env);
+
+	for (int k = 0; k < m; k++) {
+		for (int i = 1; i < n; i++)
+		expr += X[k][0][i];
+	}
+	expr -= m - 1;
+	modelo.add(IloRange(env, 1, expr, 1, "Entrada "));
+	expr = IloExpr(env);
+
+	for (int k = 0; k < m; k++) {
+		for (int i = 1; i < n; i++)
+			expr += X[k][i][0];
+	}
+	expr -= m - 1;
+	modelo.add(IloRange(env, 1, expr, 1, "Voltar a Entrada"));
 	// Restricao 1
-	for (int i = 0; i < n; i++) {
+	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 0; j < n; j++) {
-			expr += X[j][i];
+		for (int j = 1; j < n; j++) {
+			for (int k = 0; k < m; k++)
+
+			expr += X[k][i][j];
 		}
 		arco_entrada[i] = IloRange(env, 1, expr, 1, (char *)("Entradas node"+(std::to_string(i))).c_str());
 	}
@@ -167,10 +199,12 @@ int main()
 	modelo.add(arco_entrada);
 
 	// Restricao 2
-	for (int i = 0; i < n; i++) {
+	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 0; j < n; j++) {
-			expr += X[i][j];
+		for (int j = 1; j < n; j++) {
+			for (int k = 0; k < m; k++)
+
+			expr += X[k][j][i];
 		}
 		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Saidas node" + (std::to_string(i))).c_str());
 	}
@@ -180,9 +214,10 @@ int main()
 
 	// Restricao 4
 	expr = IloExpr(env);
+	for (int k = 0; k < m; k++)
 	for (int i = 0; i < n; i++)
 	{
-		expr += X[i][i];
+		expr += X[k][i][i];
 
 	}
 	expr += 1;
@@ -207,13 +242,18 @@ int main()
 
 	// Restricao 3
 	// Restrição de i == 0
+
 	mtz[0] = IloRangeArray(env);
 	// Continua i > 0
+	for (int k = 0; k < m; k++)
 	for (int i = 1; i < n; i++) {
 		mtz[i] = IloRangeArray(env, n);
 		for (int j = 1; j < n; j++) {
-			expr = t[i] - t[j] + static_cast<int>(n) * X[i][j];
-			mtz[i][j] = IloRange(env, -IloInfinity, expr, n-1);
+			
+			
+				expr = t[i] - t[j] + static_cast<int>(n) * X[k][i][j];
+				mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
+			
 		}
 		// Adiciona restricao 3 ao modelo
 		modelo.add(mtz[i]);
@@ -225,10 +265,11 @@ int main()
 	expr = IloExpr(env);
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < m; k++)
 			if (i != j)
-				expr += 2*C[i][j] * X[i][j];
+				expr += 2*C[i][j] * X[k][i][j];
 			else
-				expr += 0 * X[i][j];
+				expr += 0 * X[k][i][j];
 		}
 	}
 	IloObjective obj = IloMinimize(env, expr);
