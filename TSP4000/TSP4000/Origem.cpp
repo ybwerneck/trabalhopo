@@ -28,7 +28,7 @@ void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArra
 
 		for (auto i = 0u; i < n; i++) {
 	cplex.getValues(values, x[k][i]);
-
+    starting_vertex = 0;
 	for (auto j = 0u; j < n; j++) {
 
 		if (values[j] != 10)
@@ -187,7 +187,7 @@ int main()
 	// Restricao 1
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 1; j < n; j++) {
+		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][i][j];
@@ -201,7 +201,7 @@ int main()
 	// Restricao 2
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 1; j < n; j++) {
+		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][j][i];
