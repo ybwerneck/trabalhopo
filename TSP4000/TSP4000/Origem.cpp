@@ -41,6 +41,7 @@ void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArra
 		}
 	}
 }
+		starting_vertex = 0;         
 auto current_vertex = starting_vertex;
 std::cout << std::endl;
 double custo = 0;
@@ -54,7 +55,7 @@ do {
 			break;
 		}
 	}
-} while (false);
+} while (current_vertex!=starting_vertex);
 std::cout << current_vertex<<"Com uma distancia total de "<<custo<<"m";
 std::cout << "\n"<<std::endl<< std::endl;
 
@@ -165,9 +166,7 @@ int main()
 #pragma region Restricoes
 
 
-	//REstricao 0
-	// 
-	// 	  
+	//Restriçoes entrada	  
 	expr = IloExpr(env);
 
 	for (int k = 0; k < m; k++) {
@@ -175,7 +174,7 @@ int main()
 		expr += X[k][0][i];
 	}
 	expr -= m - 1;
-	modelo.add(IloRange(env, 1, expr, 1, "Entrada "));
+	modelo.add(IloRange(env, 1, expr, 1, "Todos partem da Entrada "));
 	expr = IloExpr(env);
 
 	for (int k = 0; k < m; k++) {
@@ -183,31 +182,33 @@ int main()
 			expr += X[k][i][0];
 	}
 	expr -= m - 1;
-	modelo.add(IloRange(env, 1, expr, 1, "Voltar a Entrada"));
-	// Restricao 1
+	modelo.add(IloRange(env, 1, expr, 1, "Todos voltam a Entrada"));
+
+
+	// Restricao numeros de entradas e saidas de cada node =1
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 1; j < n; j++) {
+		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][i][j];
 		}
-		arco_entrada[i] = IloRange(env, 1, expr, 1, (char *)("Entradas node"+(std::to_string(i))).c_str());
+		arco_entrada[i] = IloRange(env, 1, expr, 1, (char *)("Saidas node"+(std::to_string(i))).c_str());
 	}
-
-	// Adiciona restricao 1 ao modelo
 	modelo.add(arco_entrada);
 
-	// Restricao 2
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 1; j < n; j++) {
+		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][j][i];
 		}
-		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Saidas node" + (std::to_string(i))).c_str());
+		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Entradas node" + (std::to_string(i))).c_str());
 	}
+	modelo.add(arco_saida);
+
+	//Restriçao sair de 0 apenas uma vez
 	for (int k = 0; k < m; k++) {
 		expr = IloExpr(env);
 		for (int j = 0; j < n; j++)
@@ -217,10 +218,10 @@ int main()
 		modelo.add(IloRange(env, 1, expr, 1, (char*)("Passar por 0 apenas uma vez viajante >" + (std::to_string(k))).c_str()));
 	}
 
-	// Adiciona restricao 2 ao modelo
-	modelo.add(arco_saida);
+
 
 	// Restricao 4
+	// Ignorar as arestas (x,x)
 	expr = IloExpr(env);
 	for (int k = 0; k < m; k++)
 	for (int i = 0; i < n; i++)
@@ -230,33 +231,32 @@ int main()
 	}
 	expr += 1;
 	modelo.add(IloRange(env, -IloInfinity, expr, 1));
-	/*
-	// Restricao 3
 	
-	// Restrição de i == 0
+	
+	
+	//Restricao numero de Arestas == n-1
 	expr = IloExpr(env);
 	// Continua i > 0
+	for (int k = 0; k < m; k++)
 	for (int i = 0; i < n; i++) {
 	
 		for (int j = 0; j < n; j++) {
 			
-			expr += X[i][j];
+			expr += X[k][i][j];
 			}
 		// Adiciona restricao 3 ao modelo
 	}
 	expr += -n + 1;
-	modelo.add(IloRange(env, 1, expr, 1,"a"));
-	*/
+	// modelo.add(IloRange(env, 1, expr, 1, "a"));
+	
 
 	// Restricao 3
-	// Restrição de i == 0
-	
+	//Não posso voltar pelo mesmo caminho que fui
 	mtz[0] = IloRangeArray(env);
-	// Continua i > 0
 	for (int i = 0; i < n; i++) {
 		// Restrição de i == 0
 		IloExpr expr1 = IloExpr(env);
-		IloExpr expr2 = IloExpr(env);
+		
 		mtz[i] = IloRangeArray(env, n);
 		for (int j = 1; j < n; j++) {
 			for (int k = 0; k < m; k++)
@@ -270,6 +270,15 @@ int main()
 							
 		}
 	}
+	
+	for(int k=0;k<m;k++)
+		for(int y=0;y<n;y++){
+			IloExpr expr2 = IloExpr(env);
+			for (int j = 0; j < n; j++) {
+				expr2 += X[k][j][y] - X[k][y][j];
+			}
+			modelo.add(IloRange(env, -IloInfinity, expr2+1, 1));
+		}
 	
 #pragma endregion
 
