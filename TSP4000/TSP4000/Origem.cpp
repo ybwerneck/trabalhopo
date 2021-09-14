@@ -28,7 +28,7 @@ void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArra
 
 		for (auto i = 0u; i < n; i++) {
 	cplex.getValues(values, x[k][i]);
-    starting_vertex = 0;
+
 	for (auto j = 0u; j < n; j++) {
 
 		if (values[j] != 10)
@@ -54,7 +54,7 @@ do {
 			break;
 		}
 	}
-} while (current_vertex != starting_vertex);
+} while (false);
 std::cout << current_vertex<<"Com uma distancia total de "<<custo<<"m";
 std::cout << "\n"<<std::endl<< std::endl;
 
@@ -187,7 +187,7 @@ int main()
 	// Restricao 1
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 0; j < n; j++) {
+		for (int j = 1; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][i][j];
@@ -201,12 +201,20 @@ int main()
 	// Restricao 2
 	for (int i = 1; i < n; i++) {
 		expr = IloExpr(env);
-		for (int j = 0; j < n; j++) {
+		for (int j = 1; j < n; j++) {
 			for (int k = 0; k < m; k++)
 
 			expr += X[k][j][i];
 		}
 		arco_saida[i] = IloRange(env, 1, expr, 1, (char*)("Saidas node" + (std::to_string(i))).c_str());
+	}
+	for (int k = 0; k < m; k++) {
+		expr = IloExpr(env);
+		for (int j = 0; j < n; j++)
+		{
+			expr += X[k][0][j];
+		}
+		modelo.add(IloRange(env, 1, expr, 1, (char*)("Passar por 0 apenas uma vez viajante >" + (std::to_string(k))).c_str()));
 	}
 
 	// Adiciona restricao 2 ao modelo
