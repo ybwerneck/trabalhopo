@@ -15,14 +15,14 @@ void printMatrix(int n, int** c) {
 
 	}
 }
-void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArray>>& x, int k) {
+void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArray>>& x, int k,int m) {
 	const auto n = k;
 	assert(x.getSize() == n);
 
 	
 	auto starting_vertex = 0u;
 	IloNumArray values(cplex.getEnv(), n);
-	int m = 2;
+	
 	for (int k = 0; k <m; k++){ 
 		std::cout << "\n\nTour: "<<k;
 
@@ -35,7 +35,7 @@ void print_solution(const IloCplex& cplex, const IloArray<IloArray<IloNumVarArra
 
 		{
 
-			std::cout <<std::endl<< "[" << i << "]" << "["<<j<<"] =" <<values[j];
+			//	std::cout << std::endl << "[" << i << "]" << "[" << j << "] =" << values[j];
 			starting_vertex = i;
 
 		}
@@ -127,7 +127,7 @@ int main()
 
 #pragma region Variaveis de Decisao
 
-	int m=2;
+	int m=1;
 	// variaveis de decisao
 	IloArray<IloArray<IloNumVarArray>> X(env, n);
 	IloNumVarArray t(env, n);
@@ -270,7 +270,9 @@ int main()
 							
 		}
 	}
-	
+
+
+	//os que saem de um node devem ser os mesmo que entram
 	for(int k=0;k<m;k++)
 		for(int y=0;y<n;y++){
 			IloExpr expr2 = IloExpr(env);
@@ -280,6 +282,23 @@ int main()
 			modelo.add(IloRange(env, -IloInfinity, expr2+1, 1));
 		}
 	
+
+	// SEC constraint para eliminiar sucliclos
+	// We then continue normally for all other i > 0
+	for (auto k = 0; k < m; ++k)
+	for (auto i = 1u; i < n; ++i) {
+		mtz[i] = IloRangeArray(env, n);
+		for (auto j = 1u; j < n; ++j) {
+			expr = t[i] - t[j] + static_cast<int>(n) * X[k][i][j];
+
+			
+			mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
+			// Clean name
+			expr.clear(); // Clean expr
+		}
+		// Add constraints 3)[i] to the model
+		modelo.add(mtz[i]);
+	}
 #pragma endregion
 
 #pragma region Funcao Objetivo
@@ -312,7 +331,7 @@ int main()
 		cplex.solve();
 		cplex.exportModel("aName.lp");
 		cout << "Valor do objetivo: " << cplex.getObjValue() << "\n"; //retorna valor da função objetivo
-			print_solution(cplex, X, n);
+			print_solution(cplex, X, n,m);
 	}
 	catch (IloException& ex) {
 		cout << "\nSolucao nao existe :" <<ex.getMessage() <<endl;
