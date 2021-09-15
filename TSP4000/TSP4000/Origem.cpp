@@ -114,14 +114,6 @@ int main()
 	int nd = n;
 	printMatrix(n, C);
 
-	/*
-	C[0] = new int[nD] {0 , 2,29,22,13,24};
-	C[1] = new int[nD] {12, 0,19, 3,25, 6};
-	C[2] = new int[nD] {29,19,0 ,21,23,25};
-	C[3] = new int[nD] {22, 3,21, 0, 4, 5};
-	C[4] = new int[nD] {13,25,23, 4, 0,16};
-	C[5] = new int[nD] {24, 6,28, 5,16, 0};
-	*/
 #pragma endregion
 
 
@@ -231,26 +223,9 @@ int main()
 	}
 	expr += 1;
 	modelo.add(IloRange(env, -IloInfinity, expr, 1));
-	
-	
-	
-	//Restricao numero de Arestas == n-1
-	expr = IloExpr(env);
-	// Continua i > 0
-	for (int k = 0; k < m; k++)
-	for (int i = 0; i < n; i++) {
-	
-		for (int j = 0; j < n; j++) {
-			
-			expr += X[k][i][j];
-			}
-		// Adiciona restricao 3 ao modelo
-	}
-	expr += -n + 1;
-	// modelo.add(IloRange(env, 1, expr, 1, "a"));
-	
 
-	// Restricao 3
+
+	// Restricao 5
 	//Não posso voltar pelo mesmo caminho que fui
 	mtz[0] = IloRangeArray(env);
 	for (int i = 0; i < n; i++) {
@@ -262,7 +237,7 @@ int main()
 			for (int k = 0; k < m; k++)
 			{ 
 				expr1 =  X[k][i][j]* X[k][j][i] + 1;
-				// Adiciona restricao 3 ao modelo
+				// Adiciona restricao 5 ao modelo
 				modelo.add(IloRange(env, -IloInfinity, expr1,  1));
 
 			}
@@ -272,6 +247,7 @@ int main()
 	}
 
 
+	//Restrição 6
 	//os que saem de um node devem ser os mesmo que entram
 	for(int k=0;k<m;k++)
 		for(int y=0;y<n;y++){
@@ -283,8 +259,9 @@ int main()
 		}
 	
 
-	// SEC constraint para eliminiar sucliclos
-	// We then continue normally for all other i > 0
+	//Restrição 7
+	// restrição para eliminar subciclos
+	// continuar normalmente com i > 0
 	for (auto k = 0; k < m; ++k)
 	for (auto i = 1u; i < n; ++i) {
 		mtz[i] = IloRangeArray(env, n);
@@ -293,10 +270,9 @@ int main()
 
 			
 			mtz[i][j] = IloRange(env, -IloInfinity, expr, n - 1);
-			// Clean name
-			expr.clear(); // Clean expr
+			expr.clear(); // limpa expr
 		}
-		// Add constraints 3)[i] to the model
+		// Adiciona restrição 7 ao modelo
 		modelo.add(mtz[i]);
 	}
 #pragma endregion
