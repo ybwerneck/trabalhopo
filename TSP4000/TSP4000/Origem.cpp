@@ -119,7 +119,7 @@ int main()
 
 #pragma region Variaveis de Decisao
 
-	int m=1;
+	int m=4;
 	// variaveis de decisao
 	IloArray<IloArray<IloNumVarArray>> X(env, n);
 	IloNumVarArray t(env, n);
